@@ -5,5 +5,5 @@ struct sequence_s {
     int *notes;
 };
 
-sequence* sequence_new(length, speed);
+sequence* sequence_new(int length, int speed);
 void sequence_free(sequence *seq);

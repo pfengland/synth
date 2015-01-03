@@ -1,7 +1,7 @@
-#include "sequence.h";
+#include "sequence.h"
 #include <stdlib.h>
 
-sequence* sequence_new(length, speed) {
+sequence* sequence_new(int length, int speed) {
     sequence *seq = malloc(sizeof(*seq));
     seq->length = length;
     seq->speed = speed;
