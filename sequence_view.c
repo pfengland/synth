@@ -4,7 +4,18 @@
 #include <stdio.h>
 #include <assert.h>
 
-void draw_digit(int num, framebuffer *fb, int x, int y, 
+void putpixel(SDL_Surface *surface, 
+	      int x, int y, 
+	      char r, char g, char b) {
+
+    int offset = (x * 4) + (y * surface->pitch);
+    char *buf = surface->pixels;
+    buf[offset] = r;
+    buf[offset+1] = g;
+    buf[offset+2] = b;
+}
+
+void draw_digit(int num, SDL_Surface *surface, int x, int y, 
 		int fgr, int fgg, int fgb,
 		int bgr, int bgg, int bgb) {
 
@@ -20,14 +31,14 @@ void draw_digit(int num, framebuffer *fb, int x, int y,
 	    int font_index = font_offset + (fy * font_width) + fx;
 	    char font_pixel = font_bits[font_index];
 	    if (font_pixel)
-		framebuffer_putpixel(fb, x+fx, y+fy, bgr, bgg, bgb);
+		putpixel(surface, x+fx, y+fy, bgr, bgg, bgb);
 	    else
-		framebuffer_putpixel(fb, x+fx, y+fy, fgr, fgg, fgb);
+		putpixel(surface, x+fx, y+fy, fgr, fgg, fgb);
 	}
     }
 }
 
-void draw_step(sequence_view *sv, int step, framebuffer *fb, int x, int y) {
+void draw_step(sequence_view *sv, int step, SDL_Surface *surface, int x, int y) {
 
     char str[4];
     sprintf(str, "%03d", sv->seq->notes[step]);
@@ -43,14 +54,14 @@ void draw_step(sequence_view *sv, int step, framebuffer *fb, int x, int y) {
 	if (step == sv->current_step) {
 	    if (i == sv->current_char) {
 		// current char color
-		draw_digit(digit, fb, x + i*font_width, y, 200,100,0, 0,100,200);
+		draw_digit(digit, surface, x + i*font_width, y, 200,100,0, 0,100,200);
 	    } else {
 		// current step color
-		draw_digit(digit, fb, x + i*font_width, y, 0,100,200, 200,100,0);
+		draw_digit(digit, surface, x + i*font_width, y, 0,100,200, 200,100,0);
 	    }
 	} else {
 	    // regular color
-	    draw_digit(digit, fb, x + i*font_width, y, 0,0,0, 255,255,255);
+	    draw_digit(digit, surface, x + i*font_width, y, 0,0,0, 255,255,255);
 	}
 	i++;
     }
@@ -64,11 +75,11 @@ sequence_view* sequence_view_new(sequence *seq) {
     return sv;
 }
 
-void sequence_view_draw(sequence_view *sv, framebuffer *fb, int x, int y) {
+void sequence_view_draw(sequence_view *sv, SDL_Surface *surface, int x, int y) {
 
     // draw the sequence
     for (int step=0; step<sv->seq->length; step++) {
-	draw_step(sv, step, fb, 0, step * font_height);
+	draw_step(sv, step, surface, 0, step * font_height);
     }
 }
 
@@ -76,3 +87,34 @@ void sequence_view_free(sequence_view *sv) {
     free(sv);
 }
 
+void sequence_view_cursor_down(sequence_view *sv, SDL_Surface *screen) {
+    sv->current_step++;
+    if (sv->current_step >= sv->seq->length)
+	sv->current_step = 0;
+    sequence_view_draw(sv, screen, 0, 0);
+    SDL_Flip(screen);
+}
+
+void sequence_view_cursor_up(sequence_view *sv, SDL_Surface *screen) {
+    sv->current_step--;
+    if (sv->current_step < 0)
+	sv->current_step = sv->seq->length - 1;
+    sequence_view_draw(sv, screen, 0, 0);
+    SDL_Flip(screen);
+}
+
+void sequence_view_cursor_left(sequence_view *sv, SDL_Surface *screen) {
+    sv->current_char--;
+    if (sv->current_char < 0)
+	sv->current_char = 2;
+    sequence_view_draw(sv, screen, 0, 0);
+    SDL_Flip(screen);
+}
+
+void sequence_view_cursor_right(sequence_view *sv, SDL_Surface *screen) {
+    sv->current_char++;
+    if (sv->current_char > 2)
+	sv->current_char = 0;
+    sequence_view_draw(sv, screen, 0, 0);
+    SDL_Flip(screen);
+}

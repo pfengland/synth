@@ -35,7 +35,7 @@ int process(jack_nframes_t nframes, void *arg) {
 	    if (P->step_sample >= P->samples_per_step) {
 		P->step_sample = 0;
 		P->play_step++;
-		//		printf("play step %d\n", P->play_step);
+		printf("play step %d\n", P->play_step);
 	    }
 
 	    // end of sequence - loop if set
@@ -63,9 +63,9 @@ int process(jack_nframes_t nframes, void *arg) {
 
 		// square wave
 		if (cycle_sample < half_cycle)
-		    out[i] = -1;
+		    out[i] = -0.1;
 		else
-		    out[i] = 1;
+		    out[i] = 0.1;
 	    }
 
 	    P->step_sample++;
@@ -95,7 +95,7 @@ player* player_new(void) {
     p->seq = NULL;
     p->samples_per_step = 0;
     p->step_sample = 0;
-    p->loop = 0;
+    p->loop = 1;
     p->playing = 0;
 }
 
