@@ -9,7 +9,7 @@ double note_freqs[128];
 void calc_freqs() {
     for (int i=0; i<128; i++) {
 	note_freqs[i] = 440 * pow(2.0, (i - 69)/12.0);
-	printf("note %d freq %f\n", i, note_freqs[i]);
+	//	printf("note %d freq %f\n", i, note_freqs[i]);
     }
 }
 
@@ -33,7 +33,7 @@ int process(jack_nframes_t nframes, void *arg) {
 
 	    // update step
 	    if (P->step_sample >= P->samples_per_step) {
-		//		printf("play step %d: %d\n", P->play_step, P->seq->notes[P->play_step]);
+		printf("play step %d: %d\n", P->play_step, P->seq->notes[P->play_step]);
 		P->step_sample = 0;
 		P->play_step++;
 	    }
@@ -63,11 +63,9 @@ int process(jack_nframes_t nframes, void *arg) {
 
 		// square wave
 		if (cycle_sample < half_cycle) {
-		    printf("-1 ");
-		    out[i] = -1;
+		    out[i] = -0.1;
 		} else {
-		    printf("1 ");
-		    out[i] = 1;
+		    out[i] = 0.1;
 		}
 	    }
 

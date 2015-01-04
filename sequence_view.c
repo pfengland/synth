@@ -75,12 +75,14 @@ sequence_view* sequence_view_new(sequence *seq) {
     return sv;
 }
 
-void sequence_view_draw(sequence_view *sv, SDL_Surface *surface, int x, int y) {
+void sequence_view_draw(sequence_view *sv, SDL_Surface *screen, int x, int y) {
 
     // draw the sequence
     for (int step=0; step<sv->seq->length; step++) {
-	draw_step(sv, step, surface, 0, step * font_height);
+	draw_step(sv, step, screen, 0, step * font_height);
     }
+
+    SDL_Flip(screen);
 }
 
 void sequence_view_free(sequence_view *sv) {
@@ -92,7 +94,6 @@ void sequence_view_cursor_down(sequence_view *sv, SDL_Surface *screen) {
     if (sv->current_step >= sv->seq->length)
 	sv->current_step = 0;
     sequence_view_draw(sv, screen, 0, 0);
-    SDL_Flip(screen);
 }
 
 void sequence_view_cursor_up(sequence_view *sv, SDL_Surface *screen) {
@@ -100,7 +101,6 @@ void sequence_view_cursor_up(sequence_view *sv, SDL_Surface *screen) {
     if (sv->current_step < 0)
 	sv->current_step = sv->seq->length - 1;
     sequence_view_draw(sv, screen, 0, 0);
-    SDL_Flip(screen);
 }
 
 void sequence_view_cursor_left(sequence_view *sv, SDL_Surface *screen) {
@@ -108,7 +108,6 @@ void sequence_view_cursor_left(sequence_view *sv, SDL_Surface *screen) {
     if (sv->current_char < 0)
 	sv->current_char = 2;
     sequence_view_draw(sv, screen, 0, 0);
-    SDL_Flip(screen);
 }
 
 void sequence_view_cursor_right(sequence_view *sv, SDL_Surface *screen) {
@@ -116,7 +115,6 @@ void sequence_view_cursor_right(sequence_view *sv, SDL_Surface *screen) {
     if (sv->current_char > 2)
 	sv->current_char = 0;
     sequence_view_draw(sv, screen, 0, 0);
-    SDL_Flip(screen);
 }
 
 void set_current_char(sequence_view *sv, int val, SDL_Surface *screen) {
@@ -131,7 +129,6 @@ void set_current_char(sequence_view *sv, int val, SDL_Surface *screen) {
 	note = 127;
     sv->seq->notes[sv->current_step] = note;
     sequence_view_draw(sv, screen, 0, 0);
-    SDL_Flip(screen);
 }
 
 void sequence_view_input(sequence_view *sv, int val, SDL_Surface *screen) {

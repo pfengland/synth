@@ -54,13 +54,10 @@ int main(int argc, char *argv[]) {
     action.sa_handler = handle_signal;
     sigaction(SIGTERM, &action, NULL);
 
-    //    framebuffer_fill(fb, 33,47,128);
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0,100,100));
 
     sequence_view *sv = SV = sequence_view_new(seq);
     sequence_view_draw(sv, screen, 0, 0);
-
-    SDL_Flip(screen);
 
     p->playing = 1;
 
@@ -116,5 +113,6 @@ int main(int argc, char *argv[]) {
 		handle_signal(0);
 	    }
 	}
-    }
+    } 
+	//sleep(-1);
 }
