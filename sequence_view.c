@@ -118,3 +118,22 @@ void sequence_view_cursor_right(sequence_view *sv, SDL_Surface *screen) {
     sequence_view_draw(sv, screen, 0, 0);
     SDL_Flip(screen);
 }
+
+void set_current_char(sequence_view *sv, int val, SDL_Surface *screen) {
+    int note = sv->seq->notes[sv->current_step];
+    int col[3];
+    col[0] = note / 100;
+    col[1] = note / 10 % 10;
+    col[2] = note % 10;
+    col[sv->current_char] = val;
+    note = col[0] * 100 + col[1] * 10 + col[2];
+    if (note > 127)
+	note = 127;
+    sv->seq->notes[sv->current_step] = note;
+    sequence_view_draw(sv, screen, 0, 0);
+    SDL_Flip(screen);
+}
+
+void sequence_view_input(sequence_view *sv, int val, SDL_Surface *screen) {
+    set_current_char(sv, val, screen);
+}

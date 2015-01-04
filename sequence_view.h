@@ -18,5 +18,6 @@ void sequence_view_cursor_up(sequence_view *sv, SDL_Surface *screen);
 void sequence_view_cursor_down(sequence_view *sv, SDL_Surface *screen);
 void sequence_view_cursor_left(sequence_view *sv, SDL_Surface *screen);
 void sequence_view_cursor_right(sequence_view *sv, SDL_Surface *screen);
+void sequence_view_input(sequence_view *sv, int val, SDL_Surface *screen);
 
 #endif

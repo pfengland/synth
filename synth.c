@@ -81,6 +81,36 @@ int main(int argc, char *argv[]) {
 		case SDLK_RIGHT:
 		    sequence_view_cursor_right(sv, screen);
 		    break;
+		case SDLK_0:
+		    sequence_view_input(sv, 0, screen);
+		    break;
+		case SDLK_1:
+		    sequence_view_input(sv, 1, screen);
+		    break;
+		case SDLK_2:
+		    sequence_view_input(sv, 2, screen);
+		    break;
+		case SDLK_3:
+		    sequence_view_input(sv, 3, screen);
+		    break;
+		case SDLK_4:
+		    sequence_view_input(sv, 4, screen);
+		    break;
+		case SDLK_5:
+		    sequence_view_input(sv, 5, screen);
+		    break;
+		case SDLK_6:
+		    sequence_view_input(sv, 6, screen);
+		    break;
+		case SDLK_7:
+		    sequence_view_input(sv, 7, screen);
+		    break;
+		case SDLK_8:
+		    sequence_view_input(sv, 8, screen);
+		    break;
+		case SDLK_9:
+		    sequence_view_input(sv, 9, screen);
+		    break;
 		}
 	    } else if (event.type == SDL_QUIT) {
 		handle_signal(0);
