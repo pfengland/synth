@@ -21,5 +21,6 @@ player* player_new(void);
 void player_set_sequence(player *p, sequence *seq);
 void player_init(player *p);
 void player_free(player *p);
+void player_set_play_step(player *p, int step);
 
 #endif

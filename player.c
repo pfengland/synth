@@ -33,6 +33,7 @@ int process(jack_nframes_t nframes, void *arg) {
 
 	    // update step
 	    if (P->step_sample >= P->samples_per_step) {
+
 		printf("play step %d: %d\n", P->play_step, P->seq->notes[P->play_step]);
 		P->step_sample = 0;
 		P->play_step++;
@@ -162,6 +163,10 @@ void player_init(player *p) {
     }
 
     free (ports);
+}
+
+void player_set_play_step(player *p, int step) {
+    p->play_step = step;
 }
 
 void player_free(player *p) {
