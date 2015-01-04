@@ -22,22 +22,30 @@ int process(jack_nframes_t nframes, void *arg) {
 
     jack_default_audio_sample_t *out;
 
+    // get the output buffer pointer
     out = jack_port_get_buffer(P->output_port, nframes);
 
+    // calculate each sample for the current buffer
     for (int i=0; i<nframes; i++) {
 
-	if (P->seq) {
+	// do we have a sequence and are we playing?
+	if (P->seq && P->playing) {
 
 	    // update step
 	    if (P->step_sample >= P->samples_per_step) {
 		P->step_sample = 0;
 		P->play_step++;
-		printf("play step %d\n", P->play_step);
+		//		printf("play step %d\n", P->play_step);
 	    }
 
-	    // loop
+	    // end of sequence - loop if set
 	    if (P->play_step >= P->seq->length) {
 		P->play_step = 0;
+		if (!P->loop) {
+		    P->playing = 0;
+		    out[i] = 0;
+		    continue;
+		}
 	    }
 
 	    // got our current step
@@ -87,6 +95,8 @@ player* player_new(void) {
     p->seq = NULL;
     p->samples_per_step = 0;
     p->step_sample = 0;
+    p->loop = 0;
+    p->playing = 0;
 }
 
 void player_init(player *p) {

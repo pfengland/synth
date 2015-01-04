@@ -1,12 +1,32 @@
 // to compile run:
-// gcc -o synth -ljack -std=gnu99 synth.c player.c sequence.c
+// gcc -o synth -g -ljack -std=gnu99 synth.c player.c sequence.c framebuffer.c
 
+#include "sequence.h"
 #include "player.h"
+#include "framebuffer.h"
 #include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
+
+// globals for cleanup on signal
+framebuffer *FB = NULL;
+player *Player = NULL;
+sequence *Seq = NULL;
+
+void handle_signal(int signum) {
+    player_free(Player);
+    sequence_free(Seq);
+    framebuffer_free(FB);
+    exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char *argv[]) {
 
-    sequence *seq = sequence_new(8, 100);
+    // create the framebuffer
+    framebuffer *fb = FB = framebuffer_new();
+
+    // create the sequence
+    sequence *seq = Seq = sequence_new(8, 100);
     seq->notes[0] = 50;
     seq->notes[1] = 0;
     seq->notes[2] = 51;
@@ -16,10 +36,21 @@ int main(int argc, char *argv[]) {
     seq->notes[6] = 53;
     seq->notes[7] = 0;
 
-    player *p = player_new();
+    // create the player
+    player *p = Player = player_new();
     player_init(p);
     player_set_sequence(p, seq);
 
-    sleep(-1);
+    // set up the signal handler
+    struct sigaction action;
+    sigaction(SIGTERM, NULL, &action);
+    action.sa_handler = handle_signal;
+    sigaction(SIGTERM, &action, NULL);
 
+    framebuffer_fill(fb, 33,47,128);
+
+    p->playing = 1;
+
+    // run forever
+    sleep(-1);
 }

@@ -1,3 +1,6 @@
+#ifndef H_SEQUENCE
+#define H_SEQUENCE
+
 typedef struct sequence_s sequence;
 struct sequence_s {
     int length;
@@ -7,3 +10,5 @@ struct sequence_s {
 
 sequence* sequence_new(int length, int speed);
 void sequence_free(sequence *seq);
+
+#endif

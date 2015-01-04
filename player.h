@@ -1,3 +1,6 @@
+#ifndef H_PLAYER
+#define H_PLAYER
+
 #include <jack/jack.h>
 #include "sequence.h"
 
@@ -10,9 +13,13 @@ struct player_s {
     int play_step;
     int samples_per_step;
     int step_sample;
+    int loop;
+    int playing;
 };
 
 player* player_new(void);
 void player_set_sequence(player *p, sequence *seq);
 void player_init(player *p);
 void player_free(player *p);
+
+#endif
