@@ -8,6 +8,8 @@ typedef struct sequence_view_s sequence_view;
 struct sequence_view_s {
     sequence *seq;
     framebuffer *fb;
+    int current_step;
+    int current_char;
 };
 
 sequence_view* sequence_view_new(sequence *seq);

@@ -4,7 +4,9 @@
 #include <stdio.h>
 #include <assert.h>
 
-void draw_digit(int num, framebuffer *fb, int x, int y) {
+void draw_digit(int num, framebuffer *fb, int x, int y, 
+		int fgr, int fgg, int fgb,
+		int bgr, int bgg, int bgb) {
 
     assert(num >= 0 && num <= 9);
 
@@ -17,13 +19,19 @@ void draw_digit(int num, framebuffer *fb, int x, int y) {
 
 	    int font_index = font_offset + (fy * font_width) + fx;
 	    char font_pixel = font_bits[font_index];
-	    int color = 255 * font_pixel;
-	    framebuffer_putpixel(fb, x+fx, y+fy, color, color, color);
+	    if (font_pixel)
+		framebuffer_putpixel(fb, x+fx, y+fy, bgr, bgg, bgb);
+	    else
+		framebuffer_putpixel(fb, x+fx, y+fy, fgr, fgg, fgb);
 	}
     }
 }
 
-void draw_number_str(const char *str, framebuffer *fb, int x, int y) {
+void draw_step(sequence_view *sv, int step, framebuffer *fb, int x, int y) {
+
+    char str[4];
+    sprintf(str, "%03d", sv->seq->notes[step]);
+
     // get the current char
     int i=0;
     while (1) {
@@ -31,7 +39,19 @@ void draw_number_str(const char *str, framebuffer *fb, int x, int y) {
 	if (c == '\0')
 	    break;
 	int digit = c - '0';
-	draw_digit(digit, fb, x + i*font_width, y);
+
+	if (step == sv->current_step) {
+	    if (i == sv->current_char) {
+		// current char color
+		draw_digit(digit, fb, x + i*font_width, y, 200,100,0, 0,100,200);
+	    } else {
+		// current step color
+		draw_digit(digit, fb, x + i*font_width, y, 0,100,200, 200,100,0);
+	    }
+	} else {
+	    // regular color
+	    draw_digit(digit, fb, x + i*font_width, y, 0,0,0, 255,255,255);
+	}
 	i++;
     }
 }
@@ -39,18 +59,16 @@ void draw_number_str(const char *str, framebuffer *fb, int x, int y) {
 sequence_view* sequence_view_new(sequence *seq) {
     sequence_view *sv = malloc(sizeof(*sv));
     sv->seq = seq;
+    sv->current_step = 0;
+    sv->current_char = 0;
     return sv;
 }
 
 void sequence_view_draw(sequence_view *sv, framebuffer *fb, int x, int y) {
-    // try drawing something with the font
-    //    draw_number_str("1983", fb, x, y);
 
     // draw the sequence
-    char str[4];
     for (int step=0; step<sv->seq->length; step++) {
-	sprintf(str, "%03d", sv->seq->notes[step]);
-	draw_number_str(str, fb, 0, step*font_height);
+	draw_step(sv, step, fb, 0, step * font_height);
     }
 }
 

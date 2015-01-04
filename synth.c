@@ -57,6 +57,5 @@ int main(int argc, char *argv[]) {
 
     p->playing = 1;
 
-    // run forever
     sleep(-1);
 }
