@@ -1,9 +1,10 @@
 // to compile run:
-// gcc -o synth -g -ljack -std=gnu99 synth.c player.c sequence.c framebuffer.c
+// gcc -o synth -g -ljack -std=gnu99 synth.c player.c sequence.c framebuffer.c sequence_view.c
 
 #include "sequence.h"
 #include "player.h"
 #include "framebuffer.h"
+#include "sequence_view.h"
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -12,8 +13,10 @@
 framebuffer *FB = NULL;
 player *Player = NULL;
 sequence *Seq = NULL;
+sequence_view *SV = NULL;
 
 void handle_signal(int signum) {
+    sequence_view_free(SV);
     player_free(Player);
     sequence_free(Seq);
     framebuffer_free(FB);
@@ -48,6 +51,9 @@ int main(int argc, char *argv[]) {
     sigaction(SIGTERM, &action, NULL);
 
     framebuffer_fill(fb, 33,47,128);
+
+    sequence_view *sv = SV = sequence_view_new(seq);
+    sequence_view_draw(sv, fb, 0, 0);
 
     p->playing = 1;
 
