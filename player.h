@@ -4,6 +4,8 @@
 #include <jack/jack.h>
 #include "sequence.h"
 
+#define PLAY_STEP_CHANGE_EVENT 100
+
 typedef struct player_s player;
 struct player_s {
     jack_port_t *output_port;

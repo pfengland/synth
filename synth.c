@@ -4,6 +4,7 @@
 #include "sequence.h"
 #include "player.h"
 #include "sequence_view.h"
+
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -14,7 +15,7 @@ player *Player = NULL;
 sequence *Seq = NULL;
 sequence_view *SV = NULL;
 
-void handle_signal(int signum) {
+void cleanup(int signum) {
 
     printf("shutting down\n");
 
@@ -34,14 +35,6 @@ int main(int argc, char *argv[]) {
 
     // create the sequence
     sequence *seq = Seq = sequence_new(8, 100);
-    seq->notes[0] = 50;
-    seq->notes[1] = 0;
-    seq->notes[2] = 51;
-    seq->notes[3] = 0;
-    seq->notes[4] = 52;
-    seq->notes[5] = 0;
-    seq->notes[6] = 53;
-    seq->notes[7] = 0;
 
     // create the player
     player *p = Player = player_new();
@@ -51,7 +44,7 @@ int main(int argc, char *argv[]) {
     // set up the signal handler
     struct sigaction action;
     sigaction(SIGTERM, NULL, &action);
-    action.sa_handler = handle_signal;
+    action.sa_handler = cleanup;
     sigaction(SIGTERM, &action, NULL);
 
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0,100,100));
@@ -110,7 +103,7 @@ int main(int argc, char *argv[]) {
 		    break;
 		}
 	    } else if (event.type == SDL_QUIT) {
-		handle_signal(0);
+		cleanup(0);
 	    }
 	}
     } 
