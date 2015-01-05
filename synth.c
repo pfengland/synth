@@ -1,5 +1,5 @@
 // to compile run:
-// gcc -o synth -g -ljack -lSDL -std=gnu99 synth.c player.c sequence.c framebuffer.c sequence_view.c
+// gcc -o synth -g -ljack -lSDL -lX11 -std=gnu99 synth.c player.c sequence.c framebuffer.c sequence_view.c
 
 #include "sequence.h"
 #include "player.h"
@@ -9,28 +9,37 @@
 #include <signal.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
+#include <X11/Xlib.h>
 
 // globals for cleanup on signal
 player *Player = NULL;
 sequence *Seq = NULL;
 sequence_view *SV = NULL;
-
 void cleanup(int signum) {
-
     printf("shutting down\n");
-
-    sequence_view_free(SV);
     player_free(Player);
+    sequence_view_free(SV);
     sequence_free(Seq);
-
     SDL_Quit();
-
     exit(EXIT_SUCCESS);
+}
+
+void init() {
+    XInitThreads();
+    SDL_Init(SDL_INIT_VIDEO);
+
+    // set up the signal handler
+    struct sigaction action;
+    sigaction(SIGTERM, NULL, &action);
+    action.sa_handler = cleanup;
+    sigaction(SIGTERM, &action, NULL);
 }
 
 int main(int argc, char *argv[]) {
 
-    SDL_Init(SDL_INIT_VIDEO);
+    init();
+
+    // get the screen
     SDL_Surface* screen = SDL_SetVideoMode(640, 480, 32, SDL_SWSURFACE);
 
     // create the sequence
@@ -41,18 +50,11 @@ int main(int argc, char *argv[]) {
     player_init(p);
     player_set_sequence(p, seq);
 
-    // set up the signal handler
-    struct sigaction action;
-    sigaction(SIGTERM, NULL, &action);
-    action.sa_handler = cleanup;
-    sigaction(SIGTERM, &action, NULL);
-
+    // draw
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0,100,100));
 
     sequence_view *sv = SV = sequence_view_new(seq);
     sequence_view_draw(sv, screen, 0, 0);
-
-    p->playing = 1;
 
     SDL_Event event;
     while (1) {
@@ -70,6 +72,9 @@ int main(int argc, char *argv[]) {
 		    break;
 		case SDLK_RIGHT:
 		    sequence_view_cursor_right(sv, screen);
+		    break;
+		case SDLK_SPACE:
+		    p->playing = !p->playing;
 		    break;
 		case SDLK_0:
 		    sequence_view_input(sv, 0, screen);

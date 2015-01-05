@@ -29,25 +29,26 @@ int process(jack_nframes_t nframes, void *arg) {
     for (int i=0; i<nframes; i++) {
 
 	// do we have a sequence and are we playing?
-	if (P->seq && P->playing) {
+	if (P && P->seq && P->playing) {
 
 	    // update step
 	    if (P->step_sample >= P->samples_per_step) {
 
-		printf("play step %d: %d\n", P->play_step, P->seq->notes[P->play_step]);
+		//		printf("play step %d: %d\n", P->play_step, P->seq->notes[P->play_step]);
 		P->step_sample = 0;
 		P->play_step++;
 	    }
 
-	    // end of sequence - loop if set
+		// end of sequence - loop if set
 	    if (P->play_step >= P->seq->length) {
 		P->play_step = 0;
-		if (!P->loop) {
-		    P->playing = 0;
-		    out[i] = 0;
-		    continue;
-		}
+		//		if (!P->loop) {
+		    //  P->playing = 0;
+		    //  out[i] = 0;
+		    //  continue;
+		    //		}
 	    }
+
 
 	    // got our current step
 	    // get our frequency
@@ -170,5 +171,8 @@ void player_set_play_step(player *p, int step) {
 }
 
 void player_free(player *p) {
+
+    jack_client_close(p->client);
+    P = NULL;
     free(p);
 }
