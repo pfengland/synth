@@ -23,6 +23,9 @@ int process(jack_nframes_t nframes, void *arg) {
     jack_default_audio_sample_t *out;
     double amp = 1;
 
+    double samples_per_ms = P->sample_rate / 1000;
+    P->samples_per_step = samples_per_ms * P->seq->speed;
+
     // get the output buffer pointer
     out = jack_port_get_buffer(P->output_port, nframes);
 

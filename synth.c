@@ -6,6 +6,7 @@
 #include "sequence_view.h"
 
 #include <unistd.h>
+#include <math.h>
 #include <signal.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
@@ -105,6 +106,12 @@ int main(int argc, char *argv[]) {
 		    break;
 		case SDLK_9:
 		    sequence_view_input(sv, 9, screen);
+		    break;
+		case SDLK_q:
+                     seq->speed++;
+		    break;
+		case SDLK_w:
+                     seq->speed = seq->speed > 0 ? seq->speed - 1 : 0;
 		    break;
 		}
 	    } else if (event.type == SDL_QUIT) {
