@@ -21,6 +21,7 @@ void calculate() {
 int process(jack_nframes_t nframes, void *arg) {
 
     jack_default_audio_sample_t *out;
+    double amp = 1;
 
     // get the output buffer pointer
     out = jack_port_get_buffer(P->output_port, nframes);
@@ -59,15 +60,18 @@ int process(jack_nframes_t nframes, void *arg) {
 		// calc samples per cycle
 		double freq = note_freqs[note];
 		int samples_per_cycle = (double)P->sample_rate/freq;
+                
 		int half_cycle = samples_per_cycle / 2;
 
 		int cycle_sample = P->step_sample % samples_per_cycle;
 
+                double decay = 1.0 - ((double)P->step_sample / (double)P->samples_per_step);
+
 		// square wave
 		if (cycle_sample < half_cycle) {
-		    out[i] = -0.1;
+		    out[i] = -0.1*decay;
 		} else {
-		    out[i] = 0.1;
+		    out[i] = 0.1*decay;
 		}
 	    }
 
